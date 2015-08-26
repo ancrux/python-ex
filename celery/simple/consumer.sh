@@ -2,4 +2,4 @@
 
 #celery worker --help
 
-celery worker -A tasks
+celery -A tasks worker --loglevel=info --no-color
