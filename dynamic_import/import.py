@@ -59,12 +59,12 @@ if __name__ == '__main__':
     
     # pkgutils.itermodules(): list if module installed
     for loader, name, ispkg in pkgutil.iter_modules():
-        #print (loader, name, ispkg)
+        print (loader, name, ispkg)
         pass
         
     # sys.modules: list if module is imported/loaded
     print sys.path # list python lookup path
     for key, val in sys.modules.iteritems():
-        #print (key, val)
+        print (key, val)
         pass
     
