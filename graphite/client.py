@@ -13,8 +13,8 @@ class GrafanaApiClient(object):
     def __init__(self, base_url, api_token):
         self.base_url = base_url
         self.api_token = api_token
-        self.last_request_time = None
-        self.last_response_code = None
+        self.last_request = {}
+        self.last_response = {}
         
     def request(self, method, url, content = None, content_type = None):
         headers = []
@@ -23,6 +23,10 @@ class GrafanaApiClient(object):
         return self.raw_request(method, url, content, content_type, headers)
         
     def raw_request(self, method, url, content = None, content_type = None, headers = None):
+        # reset member vars
+        self.last_request = {}
+        self.last_response = {}
+    
         # make sure headers is a list
         if not isinstance(headers, list):
             headers = []
@@ -50,12 +54,12 @@ class GrafanaApiClient(object):
         c.perform()
 
         # HTTP response code, e.g. 200.
-        self.last_response_code = c.getinfo(c.RESPONSE_CODE)
-        print('Status: %d' % self.last_response_code)
+        self.last_response['code'] = c.getinfo(c.RESPONSE_CODE)
+        print('Status: %d' % self.last_response['code'])
         
         # Elapsed time for the transfer.
-        self.last_request_time = c.getinfo(c.TOTAL_TIME)
-        print('Status: %f' % self.last_request_time)
+        self.last_request['time'] = c.getinfo(c.TOTAL_TIME)
+        print('Status: %f' % self.last_request['time'])
 
         c.close()
 
