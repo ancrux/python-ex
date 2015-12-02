@@ -1,13 +1,12 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import os, sys
+import pycurl # http://pycurl.sourceforge.net/doc/index.html
 # find the best StringIO implementation available on this platform
 try:
     from cStringIO import StringIO
 except:
     from StringIO import StringIO
-import pycurl # http://pycurl.sourceforge.net/doc/index.html
-import json
 
 '''
 A read-only class that obj.name = value or obj['key'] = value is not allowed.
@@ -20,9 +19,8 @@ class ReadOnlyObject:
     def __getitem__(self, key):
         return self.__dict__[key]
 
-class GrafanaApiClient(object):            
-    def __init__(self, api_token, base_url = None):
-        self.api_token = api_token
+class HttpClient(object):            
+    def __init__(self, base_url = None):
         self.base_url = base_url if base_url else ''
         self._clear_request()
         
@@ -31,13 +29,7 @@ class GrafanaApiClient(object):
         self.last_request = ReadOnlyObject()
         self.last_response = ReadOnlyObject()
         
-    def request(self, method, url, content = None, content_type = None):
-        headers = []
-        headers.append('Authorization: Bearer %s' % self.api_token)
-        
-        return self._request(method, url, content, 'application/json', headers)
-        
-    def _request(self, method, url, content = None, content_type = None, headers = None):
+    def request(self, method, url, content = None, content_type = None, headers = None):
         self._clear_request()
     
         # make sure headers is a list
@@ -83,51 +75,18 @@ class GrafanaApiClient(object):
 
 '''
 Usage:
-g = GrafanaApiClient('eyJrIjoiaXM3a0k4M2RaY3ZETG05cE9LczdubmdwNVpSM28wMkMiLCJuIjoiYWRtaW4iLCJpZCI6MX0=')
-response = g.request('GET', 'http://172.16.33.30:3000/api/dashboards/db/my_dash') # full url
+    c = HttpClient()
+    r_body = c.request('GET', 'http://ancrux.com')
 
-g = GrafanaApiClient('eyJrIjoiaXM3a0k4M2RaY3ZETG05cE9LczdubmdwNVpSM28wMkMiLCJuIjoiYWRtaW4iLCJpZCI6MX0=', 'http://172.16.33.30:3000/api')
-response = g.request('GET', '/dashboards/db/my_dash') # path with base_url
-
-Reference:
-http://docs.grafana.org/reference/http_api/
+    c = HttpClient('http://ancrux.com')
+    r_body = c.request('GET', '/')
 '''
 if __name__ == '__main__':
-    g = GrafanaApiClient('eyJrIjoiaXM3a0k4M2RaY3ZETG05cE9LczdubmdwNVpSM28wMkMiLCJuIjoiYWRtaW4iLCJpZCI6MX0=', 'http://172.16.33.30:3000/api')
+    c = HttpClient()
+    r_body = c.request('GET', 'http://www.google.com')
     
-    r_body = g.request('GET', '/dashboards/db/my_dash')
-    print('Response Code: %d' % g.last_response.code)
-    print('Request Time: %f' % g.last_request.time)
+    print('Response Code: %d' % c.last_response.code)
+    print('Request Time: %f' % c.last_request.time)
     print r_body
-    
-    source = {
-        "name":"my_graphite",
-        "type":"graphite",
-        "url":"http://172.16.33.30",
-        "access":"proxy",
-        "basicAuth":False
-    }
-    q_body = json.dumps(source)
 
-    r_body = g.request('POST', '/datasources', q_body)
-    print('Response Code: %d' % g.last_response.code)
-    print('Request Time: %f' % g.last_request.time)
-    print r_body
-    
-    r_body = g.request('GET', '/datasources')
-    print('Response Code: %d' % g.last_response.code)
-    print('Request Time: %f' % g.last_request.time)
-    print r_body
-    
-
-
-'''
-{
-  "name":"test_datasource",
-  "type":"graphite",
-  "url":"http://mydatasource.com",
-  "access":"proxy",
-  "basicAuth":false
-}
-'''
 
