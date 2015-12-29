@@ -14,13 +14,13 @@ Common pratices:
 
 """
 
-import inspect
+import sys
 
 def decorator_func_no_params(fn):
     def fn_wrapper(*args, **kwargs):
-        print "@before '%s()'" % fn.__name__
+        print "@before '%s()'" % fn # fn.__name__
         result = fn(*args, **kwargs)
-        print "@after '%s()'" % fn.__name__
+        print "@after '%s()'" % fn # fn.__name__
         return result
     return fn_wrapper
     pass
@@ -28,9 +28,9 @@ def decorator_func_no_params(fn):
 def decorator_func_with_params(arg1, arg2):
     def fn_decorator(fn):
         def fn_wrapper(*args, **kwargs):
-            print "@before '%s(%r, %r)'" % (fn.__name__, arg1, arg2)
+            print "@before '%s(%r, %r)'" % (fn, arg1, arg2)
             result = fn(*args, **kwargs)
-            print "@after '%s(%r, %r)'" % (fn.__name__, arg1, arg2)
+            print "@after '%s(%r, %r)'" % (fn, arg1, arg2)
             return result
         return fn_wrapper
     return fn_decorator
@@ -41,9 +41,9 @@ class decorator_class_no_params:
         self.fn = fn
     
     def __call__(self, *args, **kwargs):
-        print "@before '%s()'" % inspect.stack()[0][3]
+        print "@before '%s()'" % self.fn
         result = self.fn(*args, **kwargs)
-        print "@after '%s()'" % inspect.stack()[0][3]
+        print "@after '%s()'" % self.fn
         return result
     pass
     
@@ -54,9 +54,9 @@ class decorator_class_with_params:
     
     def __call__(self, fn):
         def fn_wrapper(*args, **kwargs):
-            print "@before '%s(%r, %r)'" % (inspect.stack()[0][3], self.arg1, self.arg2)
+            print "@before '%s(%r, %r)'" % (fn, self.arg1, self.arg2)
             result = fn(*args, **kwargs)
-            print "@after '%s(%r, %r)'" % (inspect.stack()[0][3], self.arg1, self.arg2)
+            print "@after '%s(%r, %r)'" % (fn, self.arg1, self.arg2)
             return result
         return fn_wrapper
     pass
@@ -64,12 +64,14 @@ class decorator_class_with_params:
 @decorator_func_with_params('hi', 'there')
 @decorator_func_no_params
 def hello1():
-    print 'inside %s() function...' % inspect.stack()[0][3]
+    print 'inside %s() function...' % sys._getframe().f_code.co_name
+
+
 
 @decorator_class_no_params
 @decorator_class_with_params('hi', 'there')
 def hello2():
-    print 'inside %s() function...' % inspect.stack()[0][3]
+    print 'inside %s() function...' % sys._getframe().f_code.co_name
 
 if __name__ == '__main__':
     hello1()
