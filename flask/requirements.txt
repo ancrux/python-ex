@@ -1,0 +1,4 @@
+# install via pip install -r requirements.txt
+# upgrade via pip install -U -r requirements.txt
+flask
+
