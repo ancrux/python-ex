@@ -2,15 +2,23 @@
 
 """
 What's a decorator:
-- decorator is a function that takes another function as input and return a new function as output
+- decorator is a function that takes another function as input and return a new function as output:
+    obj = decorator(obj) # obj can be function or class
 - closure is used inside decorator to create a new function.
   So, we can access input function and decorator parameters inside the closure
 - decorator can be implemented as function or class, with or without parameters
+- a rule of thumb:
+    don't change the semantic of the input function when using decorator
+    
+What's a closure:
+- Closure is a fancy term meaning that when a function is declared,
+  it maintains a reference to the lexical environment in which it was declared.
 
 Common pratices:
 - check parameters: e.g. assertion, range check
-- logging: log function call
-- hook: entry and exit hooks
+- debugging, logging or timing: log function call
+- hook or lock acquire/release: entry and exit hooks
+- cache result
 
 """
 
@@ -37,7 +45,7 @@ def decorator_func_with_params(arg1, arg2):
     pass
     
 class decorator_class_no_params:
-    def __init__(self, fn):
+    def __init__(self, fn): # take fn on initialization
         self.fn = fn
     
     def __call__(self, *args, **kwargs):
@@ -48,11 +56,11 @@ class decorator_class_no_params:
     pass
     
 class decorator_class_with_params:
-    def __init__(self, arg1, arg2):
+    def __init__(self, arg1, arg2): # take params on initialization
         self.arg1 = arg1
         self.arg2 = arg2
     
-    def __call__(self, fn):
+    def __call__(self, fn): # take fn in __call__ function
         def fn_wrapper(*args, **kwargs):
             print "@before '%s(%r, %r)'" % (fn, self.arg1, self.arg2)
             result = fn(*args, **kwargs)
