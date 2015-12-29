@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """
+Documentation:
+http://falcon.readthedocs.org/
+
 #pip install gunicorn
 
 gunicorn app:app # app.py/falcon instance: app with default gunicorn settings (127.0.0.1:8000 with 1 worker)
