@@ -5,9 +5,9 @@ http://falcon.readthedocs.org/
 
 #pip install gunicorn
 
-gunicorn app:app # app.py/falcon instance: app with default gunicorn settings (127.0.0.1:8000 with 1 worker)
+gunicorn app:api # app.py with api instance: app with default gunicorn settings (127.0.0.1:8000 with 1 worker)
 # or
-gunicorn -w 2 -b '0.0.0.0:8000' app:app # bind to all address with 2 workers
+gunicorn -w 2 -b '0.0.0.0:8000' app:api # bind to all address with 2 workers
 # useful options:
 #  --reload: when code changes
 #  -D daemon mode
@@ -34,12 +34,30 @@ class MyApp:
             'Falcon\n'
             )
 
+class DefaultHandler:
+    def __init__(self):
+        pass
+    
+    def __call__(self, req, rsp):
+        rsp.status = falcon.HTTP_404
+        rsp.body = (
+            '\n'
+            'Ouch! "%s" not found\n'
+            '\n'
+            '==========================\n'
+            'Falcon\n'
+            ) % req.path
+        pass
+            
 # falcon.API instances are callable WSGI apps
-app = falcon.API()
+api = falcon.API()
 
 # Resources are represented by long-lived class instances
 myapp = MyApp()
 
 # things will handle all requests to the '/things' URL path
-app.add_route('/', myapp)
+api.add_route('/', myapp)
+
+# anything not in the routing will fall thru in sink callback/handler
+api.add_sink(DefaultHandler(), '/')
 
