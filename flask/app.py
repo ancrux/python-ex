@@ -27,7 +27,7 @@ def folder():
 def file():
     return 'file()'
     
-# place files in static folder and flash will handle it automatically for you. e.g. /static/file
+# place files in static folder and flask will handle it automatically for you. e.g. /static/file
 
 # place files in templates folder
 @app.route('/hello')
